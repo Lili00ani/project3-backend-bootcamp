@@ -14,19 +14,16 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.venue);
       this.belongsTo(models.admin);
       this.belongsTo(models.status);
-      // this.belongsToMany(models.user, { through: "fav_event" });
-      // this.belongsToMany(models.user, { through: "waitlist" });
-      // this.belongsToMany(models.event, { through: "booking" });
       this.belongsToMany(models.user, {
-        as: "favorited_by_users", // Unique name for the association
+        as: "favorited_by_users",
         through: "fav_event",
       });
       this.belongsToMany(models.user, {
-        as: "waitlisted_by_users", // Unique name for the association
+        as: "waitlisted_by_users",
         through: "waitlist",
       });
       this.belongsToMany(models.event, {
-        as: "booked_events", // Unique name for the association
+        as: "booked_events",
         through: "booking",
       });
       this.hasMany(models.booking);
