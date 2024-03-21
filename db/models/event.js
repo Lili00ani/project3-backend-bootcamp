@@ -14,9 +14,21 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.venue);
       this.belongsTo(models.admin);
       this.belongsTo(models.status);
-      this.belongsToMany(models.user, { through: "fav_event" });
-      this.belongsToMany(models.user, { through: "waitlist" });
-      this.belongsToMany(models.event, { through: "booking" });
+      // this.belongsToMany(models.user, { through: "fav_event" });
+      // this.belongsToMany(models.user, { through: "waitlist" });
+      // this.belongsToMany(models.event, { through: "booking" });
+      this.belongsToMany(models.user, {
+        as: "FavoritedByUsers", // Unique name for the association
+        through: "fav_event",
+      });
+      this.belongsToMany(models.user, {
+        as: "WaitlistedByUsers", // Unique name for the association
+        through: "waitlist",
+      });
+      this.belongsToMany(models.event, {
+        as: "BookedByEvents", // Unique name for the association
+        through: "booking",
+      });
       this.hasMany(models.booking);
       this.hasMany(models.image);
     }
@@ -73,7 +85,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Event",
+      modelName: "event",
       underscored: true,
       timestamps: true,
     }
