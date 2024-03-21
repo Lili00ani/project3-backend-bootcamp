@@ -18,15 +18,15 @@ module.exports = (sequelize, DataTypes) => {
       // this.belongsToMany(models.user, { through: "waitlist" });
       // this.belongsToMany(models.event, { through: "booking" });
       this.belongsToMany(models.user, {
-        as: "FavoritedByUsers", // Unique name for the association
+        as: "favorited_by_users", // Unique name for the association
         through: "fav_event",
       });
       this.belongsToMany(models.user, {
-        as: "WaitlistedByUsers", // Unique name for the association
+        as: "waitlisted_by_users", // Unique name for the association
         through: "waitlist",
       });
       this.belongsToMany(models.event, {
-        as: "BookedByEvents", // Unique name for the association
+        as: "booked_events", // Unique name for the association
         through: "booking",
       });
       this.hasMany(models.booking);
