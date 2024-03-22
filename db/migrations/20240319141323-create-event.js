@@ -64,7 +64,7 @@ module.exports = {
         type: Sequelize.DATE,
       },
 
-      duration_in_mins: {
+      duration: {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
