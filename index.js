@@ -27,7 +27,13 @@ const {
 } = db;
 
 // initializing Controllers (to be updated)
-const eventsController = new EventsController(event);
+const eventsController = new EventsController(
+  event,
+  admin,
+  category,
+  language,
+  venue
+);
 
 // inittializing Routers
 const eventsRouter = new EventsRouter(eventsController).routes();

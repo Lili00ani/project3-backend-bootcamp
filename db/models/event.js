@@ -66,8 +66,8 @@ module.exports = (sequelize, DataTypes) => {
       //   },
       // },
       price: DataTypes.FLOAT,
-      date: DataTypes.DATE,
-      duration: DataTypes.INTEGER,
+      start: DataTypes.DATE,
+      end: DataTypes.DATE,
       // status_id: {
       //   type: DataTypes.INTEGER,
       //   references: {
