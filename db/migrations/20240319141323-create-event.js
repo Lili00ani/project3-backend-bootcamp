@@ -59,14 +59,14 @@ module.exports = {
         type: Sequelize.FLOAT,
       },
 
-      date: {
+      start: {
         allowNull: false,
         type: Sequelize.DATE,
       },
 
-      duration_in_mins: {
+      end: {
         allowNull: false,
-        type: Sequelize.INTEGER,
+        type: Sequelize.DATE,
       },
 
       status_id: {

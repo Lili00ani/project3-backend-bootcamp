@@ -37,44 +37,44 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       description: DataTypes.TEXT,
-      language_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "languages",
-          key: "id",
-        },
-      },
-      category_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "categories",
-          key: "id",
-        },
-      },
-      venue_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "venues",
-          key: "id",
-        },
-      },
-      admin_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "admins",
-          key: "id",
-        },
-      },
+      // language_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "languages",
+      //     key: "id",
+      //   },
+      // },
+      // category_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "categories",
+      //     key: "id",
+      //   },
+      // },
+      // venue_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "venues",
+      //     key: "id",
+      //   },
+      // },
+      // admin_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "admins",
+      //     key: "id",
+      //   },
+      // },
       price: DataTypes.FLOAT,
-      date: DataTypes.DATE,
-      duration_in_mins: DataTypes.INTEGER,
-      status_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "statuses",
-          key: "id",
-        },
-      },
+      start: DataTypes.DATE,
+      end: DataTypes.DATE,
+      // status_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "statuses",
+      //     key: "id",
+      //   },
+      // },
       capacity: {
         type: DataTypes.INTEGER,
         allowNull: false,
