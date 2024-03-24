@@ -5,6 +5,7 @@ require("dotenv").config();
 
 // importing Routers
 const EventsRouter = require("./routers/eventsRouter");
+const authRoutes = require("./routers/authRoutes");
 
 // importing Controllers
 const EventsController = require("./controllers/eventsController");
@@ -38,7 +39,7 @@ const eventsController = new EventsController(
 // inittializing Routers
 const eventsRouter = new EventsRouter(eventsController).routes();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const app = express();
 
 // Enable reading JSON request bodies
@@ -49,7 +50,8 @@ app.use(cors());
 
 // enable and use router
 app.use("/events", eventsRouter);
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Express app listening on port ${PORT}!`);
+  console.log(`Express Server listening on port ${PORT}!`);
 });
