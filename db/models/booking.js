@@ -16,26 +16,36 @@ module.exports = (sequelize, DataTypes) => {
   }
   Booking.init(
     {
-      user_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "users",
-          key: "id",
-        },
-      },
-      event_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "events",
-          key: "id",
-        },
-      },
-      payment_id: {
+      id: {
+        allowNull: false,
+        primaryKey: true,
         type: DataTypes.UUID,
-        references: {
-          model: "payments",
-          key: "id",
-        },
+        defaultValue: DataTypes.UUIDV4,
+      },
+      // user_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "users",
+      //     key: "id",
+      //   },
+      // },
+      // event_id: {
+      //   type: DataTypes.INTEGER,
+      //   references: {
+      //     model: "events",
+      //     key: "id",
+      //   },
+      // },
+      // payment_id: {
+      //   type: DataTypes.UUID,
+      //   references: {
+      //     model: "payments",
+      //     key: "id",
+      //   },
+      // },
+      booking_status: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       quantity_bought: {
         type: DataTypes.INTEGER,

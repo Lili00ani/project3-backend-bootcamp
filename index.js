@@ -5,9 +5,11 @@ require("dotenv").config();
 
 // importing Routers
 const EventsRouter = require("./routers/eventsRouter");
+const BookingsRouter = require("./routers/bookingsRouter");
 
 // importing Controllers
 const EventsController = require("./controllers/eventsController");
+const BookingsController = require("./controllers/bookingsController");
 
 // importing DB
 const db = require("./db/models/index");
@@ -34,9 +36,11 @@ const eventsController = new EventsController(
   language,
   venue
 );
+const bookingsController = new BookingsController(booking, event, payment);
 
 // inittializing Routers
 const eventsRouter = new EventsRouter(eventsController).routes();
+const bookingsRouter = new BookingsRouter(bookingsController).routes();
 
 const PORT = process.env.PORT;
 const app = express();
@@ -49,6 +53,7 @@ app.use(cors());
 
 // enable and use router
 app.use("/events", eventsRouter);
+app.use("/bookings", bookingsRouter);
 
 app.listen(PORT, () => {
   console.log(`Express app listening on port ${PORT}!`);

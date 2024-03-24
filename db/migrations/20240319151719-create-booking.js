@@ -30,6 +30,10 @@ module.exports = {
           key: "id",
         },
       },
+      booking_status: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
       quantity_bought: {
         allowNull: false,
         type: Sequelize.INTEGER,

@@ -22,8 +22,8 @@ module.exports = (sequelize, DataTypes) => {
         as: "waitlisted_by_users",
         through: "waitlist",
       });
-      this.belongsToMany(models.event, {
-        as: "booked_events",
+      this.belongsToMany(models.user, {
+        as: "booked_by_users",
         through: "booking",
       });
       this.hasMany(models.booking);
