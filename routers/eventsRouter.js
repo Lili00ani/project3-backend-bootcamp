@@ -7,7 +7,10 @@ class EventsRouter {
   }
 
   routes() {
-    router.get("/", this.controller.getAll.bind(this.controller));
+    router.get(
+      "/",
+      this.controller.getOngoingEventsWithAdmin.bind(this.controller)
+    );
     router.get("/:eventId", this.controller.getOne.bind(this.controller));
     return router;
   }

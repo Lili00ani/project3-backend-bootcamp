@@ -10,7 +10,7 @@ class EventsController extends BaseController {
   }
 
   // Retrieve ongoing events with the associated admin for homepage
-  async getAll(req, res) {
+  async getOngoingEventsWithAdmin(req, res) {
     console.log(this.model);
     try {
       const output = await this.model.findAll({
