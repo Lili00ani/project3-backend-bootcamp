@@ -1,6 +1,8 @@
 const { sequelize } = require("../db/models");
 const { Op } = require("sequelize");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const BaseController = require("./baseController");
+const BACKEND_URL = process.env.BACKEND_URL;
 
 class BookingsController extends BaseController {
   constructor(model, eventModel, paymentModel) {
@@ -14,82 +16,111 @@ class BookingsController extends BaseController {
 
   // cancel a booking
 
-  //check number of tickets bought per event
+  //check number of tickets bought per event, maybe move to helpers function in the future?
   async getAvailableCapacity(req, res) {
     const { eventId } = req.params;
     try {
-      const output = await this.model.findAll({
+      const totalTicketsBought = await this.model.sum("quantity_bought", {
         where: {
           eventId: eventId,
-          booking_status: "complete",
+          booking_status: "open",
           // booking_status: { [Op.or]: ["Complete", "Open"] },
         },
       });
 
-      //get all the ticket_bought row and sum them up
-      let totalTicketsBought = 0;
-      output.forEach((booking) => {
-        totalTicketsBought += booking.quantity_bought;
-      });
-
       //get event capacity
-      const event = await Event.findByPk(eventId);
+      const event = await this.eventModel.findByPk(eventId);
       const totalCapacity = event.capacity;
 
       // Calculate the available capacity
       const availableCapacity = totalCapacity - totalTicketsBought;
 
-      return res.json({ availableCapacity: availableCapacity });
+      return availableCapacity;
+    } catch (err) {
+      console.log(err);
+      throw new Error("Error calculating available capacity");
+    }
+  }
+
+  //create a stripe checkout session
+  async createCheckoutSession(req, res) {
+    const { eventId } = req.params;
+    const { quantity_bought } = 1;
+
+    try {
+      // Check if there are enough available tickets
+      const availableCapacity = await this.getAvailableCapacity(req, res);
+      if (quantity_bought > availableCapacity) {
+        throw new Error("Not enough tickets available");
+      }
+      // Event price
+      const event = await this.eventModel.findByPk(eventId);
+
+      // Create a checkout session
+      const session = await stripe.checkout.sessions.create({
+        ui_mode: "embedded",
+        line_items: [
+          {
+            price_data: {
+              currency: "SGD",
+              product_data: {
+                name: event.title,
+              },
+              unit_amount: event.price * 100,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        ui_mode: "embedded",
+        return_url: `${BACKEND_URL}/return?session_id={CHECKOUT_SESSION_ID}`,
+      });
+      res.send({ clientSecret: session.client_secret });
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: true, msg: err });
     }
   }
 
-  // create a booking
+  //handle success
+  async getSessionStatus(req, res) {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(
+        req.query.session_id
+      );
+      res.json({
+        status: session.status,
+        payment_status: session.payment_status,
+        customer_email: session.customer_details.email,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+
+  //create a booking
   async insertOne(req, res) {
     const { eventId } = req.params;
     const { quantity_bought } = req.body;
 
     try {
+      // Event price
+
       await sequelize.transaction(async (t) => {
-        //check if tickets sufficient
-        const booked = await this.model.sum("quantity_bought", {
-          where: {
-            eventId: eventId,
-            booking_status: "open",
-          },
-          transaction: t,
-        });
-
-        //get event capacity
-        const event = await this.eventModel.findByPk(eventId, {
-          transaction: t,
-        });
-
-        // Check if there are enough tickets available
-        const availableTickets = event.capacity - (booked || 0);
-        if (quantity_bought > availableTickets) {
-          throw new Error("Not enough tickets available");
-        }
-
-        //calculate total price user need to pay
-        const total = quantity_bought * event.price;
-
-        //create payment entry
+        // Create payment entry
         const payment = await this.paymentModel.create(
           {
-            total: total,
+            total: 100,
             currency: "SGD",
             status: "open",
           },
           { transaction: t }
         );
 
-        //create booking entry
+        // Create booking entry
         const booking = await this.model.create(
           {
-            //next time update the user
             userId: 1,
             eventId: eventId,
             quantity_bought: quantity_bought,
@@ -98,12 +129,11 @@ class BookingsController extends BaseController {
           },
           { transaction: t }
         );
+
         // Associate booking with payment
         await booking.setPayment(payment, { transaction: t });
 
-        //create condition when payment status becomes complete, the booking status will automatically change to complete yoo
-        //when payment status stays as "open" for 30 mins, booking status changed to cancel.
-
+        // Save booking
         await booking.save({ transaction: t });
         return res.json(booking);
       });
