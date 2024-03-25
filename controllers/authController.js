@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const User = require("../db/models/user");
+const user = require("../db/models/user");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -8,12 +8,12 @@ const login = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
+    const userExists = await userExists.findOne({ where: { email } });
+    if (!userExists) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, userExists.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid password" });
     }
@@ -29,14 +29,14 @@ const register = async (req, res) => {
     return res.status(400).json({ error: "Please fill all the fields" });
   }
   try {
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await user.findOne({ where: { email } });
     if (existingUser) {
       return res
         .status(409)
         .json({ error: "User with this email already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ name, email, password: hashedPassword, role });
+    await user.create({ name, email, password: hashedPassword, role });
 
     return res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -44,4 +44,5 @@ const register = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 module.exports = { login, register };
