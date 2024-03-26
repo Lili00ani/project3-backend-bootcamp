@@ -2,6 +2,7 @@ const cors = require("cors");
 const express = require("express");
 const { auth } = require("express-oauth2-jwt-bearer");
 require("dotenv").config();
+const cookieParser = require("cookie-parser");
 
 // importing Routers
 const EventsRouter = require("./routers/eventsRouter");
@@ -12,7 +13,15 @@ const EventsController = require("./controllers/eventsController");
 
 // importing DB
 const db = require("./db/models/index");
-
+//connecting db
+(async () => {
+  try {
+    await db.sequelize.authenticate();
+    console.log("Database connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+})();
 // initialising all the model name, to be updated.
 const {
   admin,
@@ -41,6 +50,8 @@ const eventsRouter = new EventsRouter(eventsController).routes();
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+//parsing cookies
+app.use(cookieParser());
 
 // Enable reading JSON request bodies
 app.use(express.json());
