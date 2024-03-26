@@ -1,12 +1,8 @@
 const jwt = require("jsonwebtoken");
 
 const { default: userModal } = require("../db/models/userModal");
-// Middleware for authentication
 const isAuthenticated = (req, res, next) => {
-  // Get the token from the request cookies
   const token = req?.cookies?.token;
-
-  // Verify the token
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
@@ -15,13 +11,12 @@ const isAuthenticated = (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: "Failed to authenticate token" });
     }
-    req.user = decoded.id; // Add the decoded user object to the request object
+    req.user = decoded.id;
     next();
   });
 };
 
 const isAuthorize = (requiredRole) => async (req, res, next) => {
-  // Check if user object exists in request (i.e., if the user is authenticated)
   if (!req.user) {
     return res
       .status(401)
