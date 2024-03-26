@@ -8,7 +8,10 @@ class BookingsRouter {
   }
 
   routes() {
-    router.post("/:eventId", this.controller.insertOne.bind(this.controller));
+    router.post(
+      "/:eventId",
+      this.controller.insertOneFree.bind(this.controller)
+    );
     router.post(
       "/create-checkout-session/:eventId",
       this.controller.createCheckoutSession.bind(this.controller)

@@ -91,6 +91,8 @@ class BookingsController extends BaseController {
         req.query.session_id
       );
       const payment_intent = session.payment_intent;
+      console.log(eventId);
+      console.log(payment_intent);
 
       //check if payment intent is successful and whether have already store in database, if not insert new one
       if (session.status === "complete") {
@@ -122,9 +124,56 @@ class BookingsController extends BaseController {
   }
 
   //create a booking
+  //eventId, quantity_bought, payment_intent,
   async insertOne(eventId, quantity_bought, payment_intent, req, res) {
     try {
       const event = await this.eventModel.findByPk(eventId);
+      console.log(eventId);
+
+      await sequelize.transaction(async (t) => {
+        // Create payment entry
+        const payment = await this.paymentModel.create(
+          {
+            total: event.price * quantity_bought * 100,
+            currency: "SGD",
+            status: "complete",
+            payment_intent: payment_intent,
+          },
+          { transaction: t }
+        );
+
+        // Create booking entry
+        const booking = await this.model.create(
+          {
+            userId: 1,
+            eventId: eventId,
+            quantity_bought: quantity_bought,
+            quantity_left: quantity_bought,
+            booking_status: "complete",
+          },
+          { transaction: t }
+        );
+
+        // Associate booking with payment
+        await booking.setPayment(payment, { transaction: t });
+
+        // Save booking in database
+        await booking.save({ transaction: t });
+        return res.json(booking);
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+
+  async insertOneFree(req, res) {
+    try {
+      console.log(req.body);
+      const { eventId, quantity_bought, payment_intent } = req.body;
+
+      const event = await this.eventModel.findByPk(eventId);
+      console.log(eventId);
 
       await sequelize.transaction(async (t) => {
         // Create payment entry
