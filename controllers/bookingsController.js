@@ -73,7 +73,7 @@ class BookingsController extends BaseController {
         ],
         mode: "payment",
         ui_mode: "embedded",
-        return_url: `${BACKEND_URL}/return?session_id={CHECKOUT_SESSION_ID}`,
+        return_url: `http://localhost:3001/return?session_id={CHECKOUT_SESSION_ID}`,
       });
       res.send({ clientSecret: session.client_secret });
     } catch (err) {
@@ -88,7 +88,7 @@ class BookingsController extends BaseController {
       const session = await stripe.checkout.sessions.retrieve(
         req.query.session_id
       );
-      res.json({
+      res.send({
         status: session.status,
         payment_status: session.payment_status,
         customer_email: session.customer_details.email,
