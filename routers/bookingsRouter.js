@@ -17,6 +17,10 @@ class BookingsRouter {
       "/session-status",
       this.controller.getSessionStatus.bind(this.controller)
     );
+    router.get(
+      "/capacity/:eventId",
+      this.controller.getAvailableCapacity.bind(this.controller)
+    );
     return router;
   }
 }

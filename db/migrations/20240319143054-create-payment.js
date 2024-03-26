@@ -11,7 +11,7 @@ module.exports = {
       },
       total: {
         allowNull: false,
-        type: Sequelize.FLOAT,
+        type: Sequelize.INTEGER,
       },
       currency: {
         allowNull: false,
@@ -19,6 +19,9 @@ module.exports = {
       },
       status: {
         allowNull: false,
+        type: Sequelize.STRING,
+      },
+      payment_intent: {
         type: Sequelize.STRING,
       },
       created_at: {
