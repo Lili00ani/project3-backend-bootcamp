@@ -14,8 +14,14 @@ module.exports = (sequelize, DataTypes) => {
   }
   Payment.init(
     {
+      id: {
+        allowNull: false,
+        primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+      },
       total: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       currency: {
@@ -25,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      payment_intent: {
+        type: DataTypes.STRING,
       },
     },
     {

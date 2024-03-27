@@ -10,7 +10,7 @@ class EventsController extends BaseController {
   }
 
   // Retrieve ongoing events with the associated admin for homepage
-  async getAll(req, res) {
+  async getOngoingEventsWithAdmin(req, res) {
     console.log(this.model);
     try {
       const output = await this.model.findAll({
@@ -24,7 +24,7 @@ class EventsController extends BaseController {
     }
   }
 
-  // Retrieve specific event
+  // Retrieve specific event with all the details information
   async getOne(req, res) {
     const { eventId } = req.params;
     try {
@@ -43,7 +43,21 @@ class EventsController extends BaseController {
     }
   }
 
-  // Create sighting
+  //Update number of tickets available when user in the process of booking or after successfully booking
+  // async updateEventCapacity(req, res) {
+  //   const { eventId } = req.params;
+  //   const { quantity_bought } = req.body;
+  //   try {
+  //     const output = await this.model.findByPk(eventId);
+  //     output.available_capacity -= quantity_bought;
+  //     await output.save();
+
+  //     return res.json(output);
+  //   } catch (err) {
+  //     console.log(err);
+  //     return res.status(400).json({ error: true, msg: err });
+  //   }
+  // }
 }
 
 module.exports = EventsController;

@@ -1,15 +1,18 @@
 const cors = require("cors");
 const express = require("express");
 const { auth } = require("express-oauth2-jwt-bearer");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 
 // importing Routers
 const EventsRouter = require("./routers/eventsRouter");
 const authRoutes = require("./routers/authRoutes");
+const BookingsRouter = require("./routers/bookingsRouter");
 
 // importing Controllers
 const EventsController = require("./controllers/eventsController");
+const BookingsController = require("./controllers/bookingsController");
 
 // importing DB
 const db = require("./db/models/index");
@@ -44,9 +47,11 @@ const eventsController = new EventsController(
   language,
   venue
 );
+const bookingsController = new BookingsController(booking, event, payment);
 
 // inittializing Routers
 const eventsRouter = new EventsRouter(eventsController).routes();
+const bookingsRouter = new BookingsRouter(bookingsController).routes();
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -62,6 +67,7 @@ app.use(cors());
 // enable and use router
 app.use("/events", eventsRouter);
 app.use("/api/auth", authRoutes);
+app.use("/bookings", bookingsRouter);
 
 app.listen(PORT, () => {
   console.log(`Express Server listening on port ${PORT}!`);
