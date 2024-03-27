@@ -3,9 +3,11 @@ const express = require("express");
 const { auth } = require("express-oauth2-jwt-bearer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 require("dotenv").config();
+const cookieParser = require("cookie-parser");
 
 // importing Routers
 const EventsRouter = require("./routers/eventsRouter");
+const authRoutes = require("./routers/authRoutes");
 const BookingsRouter = require("./routers/bookingsRouter");
 
 // importing Controllers
@@ -14,7 +16,15 @@ const BookingsController = require("./controllers/bookingsController");
 
 // importing DB
 const db = require("./db/models/index");
-
+//connecting db
+(async () => {
+  try {
+    await db.sequelize.authenticate();
+    console.log("Database connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+})();
 // initialising all the model name, to be updated.
 const {
   admin,
@@ -43,8 +53,10 @@ const bookingsController = new BookingsController(booking, event, payment);
 const eventsRouter = new EventsRouter(eventsController).routes();
 const bookingsRouter = new BookingsRouter(bookingsController).routes();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const app = express();
+//parsing cookies
+app.use(cookieParser());
 
 // Enable reading JSON request bodies
 app.use(express.json());
@@ -54,8 +66,9 @@ app.use(cors());
 
 // enable and use router
 app.use("/events", eventsRouter);
+app.use("/api/auth", authRoutes);
 app.use("/bookings", bookingsRouter);
 
 app.listen(PORT, () => {
-  console.log(`Express app listening on port ${PORT}!`);
+  console.log(`Express Server listening on port ${PORT}!`);
 });
