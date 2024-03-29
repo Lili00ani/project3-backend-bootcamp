@@ -14,7 +14,7 @@ class EventsRouter {
     router.get("/:eventId", this.controller.getOne.bind(this.controller));
     router.get(
       "/search/:keyword",
-      this.controller.searchByTitle.bind(this.controller)
+      this.controller.searchByFilter.bind(this.controller)
     );
 
     return router;

@@ -44,9 +44,11 @@ class EventsController extends BaseController {
     }
   }
 
-  async searchByTitle(req, res) {
+  async searchByFilter(req, res) {
     const { keyword } = req.params;
+    const { categories } = req.query;
     try {
+      const categoryFilter = categories ? { id: categories } : {};
       const output = await this.model.findAll({
         where: {
           title: { [Op.iLike]: `%${keyword}%` },
@@ -55,7 +57,7 @@ class EventsController extends BaseController {
           { model: this.adminModel, as: "admin" },
           { model: this.venueModel, as: "venue" },
           { model: this.languageModel, as: "language" },
-          { model: this.categoryModel, as: "category" },
+          { model: this.categoryModel, as: "category", where: categoryFilter },
         ],
       });
       return res.json(output);
