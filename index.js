@@ -1,6 +1,6 @@
 const cors = require("cors");
 const express = require("express");
-// const { auth } = require("express-oauth2-jwt-bearer");
+const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
@@ -63,6 +63,11 @@ app.use(express.json());
 
 // Enable CORS access to this server
 app.use(cors());
+
+const checkJwt = auth({
+  audience: process.env.AUDIENCE,
+  issuerBaseURL: process.env.ISSUER_BASE_URL,
+});
 
 // enable and use router
 app.use("/events", eventsRouter);

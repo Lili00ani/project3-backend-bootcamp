@@ -127,6 +127,12 @@ class BookingsController extends BaseController {
   //eventId, quantity_bought, payment_intent,
   async insertOne(eventId, quantity_bought, payment_intent, req, res) {
     try {
+      eventId = parseInt(eventId);
+
+      // Validate eventId
+      if (isNaN(eventId)) {
+        return res.status(400).json({ error: true, msg: "Invalid eventId" });
+      }
       const event = await this.eventModel.findByPk(eventId);
       console.log(eventId);
 
