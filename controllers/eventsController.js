@@ -1,4 +1,5 @@
 const BaseController = require("./baseController");
+const { Op } = require("sequelize");
 
 class EventsController extends BaseController {
   constructor(model, adminModel, categoryModel, languageModel, venueModel) {
@@ -43,21 +44,26 @@ class EventsController extends BaseController {
     }
   }
 
-  //Update number of tickets available when user in the process of booking or after successfully booking
-  // async updateEventCapacity(req, res) {
-  //   const { eventId } = req.params;
-  //   const { quantity_bought } = req.body;
-  //   try {
-  //     const output = await this.model.findByPk(eventId);
-  //     output.available_capacity -= quantity_bought;
-  //     await output.save();
-
-  //     return res.json(output);
-  //   } catch (err) {
-  //     console.log(err);
-  //     return res.status(400).json({ error: true, msg: err });
-  //   }
-  // }
+  async searchByTitle(req, res) {
+    const { keyword } = req.params;
+    try {
+      const output = await this.model.findAll({
+        where: {
+          title: { [Op.iLike]: `%${keyword}%` },
+        },
+        include: [
+          { model: this.adminModel, as: "admin" },
+          { model: this.venueModel, as: "venue" },
+          { model: this.languageModel, as: "language" },
+          { model: this.categoryModel, as: "category" },
+        ],
+      });
+      return res.json(output);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred while searching by title.");
+    }
+  }
 }
 
 module.exports = EventsController;

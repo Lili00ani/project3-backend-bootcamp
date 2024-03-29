@@ -12,6 +12,10 @@ class EventsRouter {
       this.controller.getOngoingEventsWithAdmin.bind(this.controller)
     );
     router.get("/:eventId", this.controller.getOne.bind(this.controller));
+    router.get(
+      "/search/:keyword",
+      this.controller.searchByTitle.bind(this.controller)
+    );
 
     return router;
   }
