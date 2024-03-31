@@ -5,6 +5,7 @@ const {
   deleteUser,
   updateUser,
   findUserById,
+  logout,
 } = require("../controllers/authController");
 const express = require("express");
 const { isAuthenticated, isAuthorize } = require("../middlewares/verifyToken");
@@ -16,5 +17,6 @@ router.delete("/:id", isAuthenticated, isAuthorize("admin"), deleteUser);
 router.put("/:id", isAuthenticated, isAuthorize("admin"), updateUser);
 router.get("/users", isAuthenticated, isAuthorize("admin"), findAllUsers);
 router.get("/:id", isAuthenticated, isAuthorize("admin"), findUserById);
+router.post("/logout", isAuthenticated, logout);
 
 module.exports = router;

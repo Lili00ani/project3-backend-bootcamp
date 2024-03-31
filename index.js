@@ -62,7 +62,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Enable CORS access to this server
-app.use(cors());
+app.use(cors({ credentials: true }));
 
 // enable and use router
 app.use("/events", eventsRouter);
