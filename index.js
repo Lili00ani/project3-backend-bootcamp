@@ -66,7 +66,7 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS access to this server
-app.use(cors());
+app.use(cors({ credentials: true }));
 
 //testing with simple basic auth0,
 const checkJwt = auth({
