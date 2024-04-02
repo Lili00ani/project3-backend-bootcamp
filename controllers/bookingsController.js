@@ -151,7 +151,7 @@ class BookingsController extends BaseController {
         // Create booking entry
         const booking = await this.model.create(
           {
-            userId: 1,
+            userId: "0a750c6d-758e-4113-806d-4061f49edd13",
             eventId: eventId,
             quantity_bought: quantity_bought,
             quantity_left: quantity_bought,
