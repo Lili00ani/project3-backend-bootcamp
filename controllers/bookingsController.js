@@ -217,6 +217,58 @@ class BookingsController extends BaseController {
       return res.status(400).json({ error: true, msg: err });
     }
   }
+
+  async getOngoingBooking(req, res) {
+    const { userId } = req.body;
+
+    try {
+      const output = await this.model.findAll({
+        include: [
+          {
+            model: this.eventModel,
+            as: "event",
+            where: {
+              statusId: {
+                [Op.or]: [2, 3, 4],
+              },
+            },
+          },
+        ],
+        where: { userId: userId },
+      });
+
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+
+  async getPastBooking(req, res) {
+    const { userId } = req.body;
+
+    try {
+      const output = await this.model.findAll({
+        include: [
+          {
+            model: this.eventModel,
+            as: "event",
+            where: {
+              statusId: {
+                [Op.or]: [5, 6],
+              },
+            },
+          },
+        ],
+        where: { userId: userId },
+      });
+
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
 }
 
 module.exports = BookingsController;

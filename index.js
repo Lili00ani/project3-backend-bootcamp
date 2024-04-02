@@ -68,6 +68,7 @@ app.use(express.json());
 // Enable CORS access to this server
 app.use(cors());
 
+//testing with simple basic auth0,
 const checkJwt = auth({
   audience: process.env.AUDIENCE,
   issuerBaseURL: process.env.ISSUER_BASE_URL,
