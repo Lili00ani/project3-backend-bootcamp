@@ -219,7 +219,7 @@ class BookingsController extends BaseController {
   }
 
   async getOngoingBooking(req, res) {
-    const { userId } = req.body;
+    const { userId } = req.query;
 
     try {
       const output = await this.model.findAll({
@@ -245,7 +245,7 @@ class BookingsController extends BaseController {
   }
 
   async getPastBooking(req, res) {
-    const { userId } = req.body;
+    const { userId } = req.query;
 
     try {
       const output = await this.model.findAll({
