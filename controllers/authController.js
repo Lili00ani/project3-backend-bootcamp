@@ -5,7 +5,7 @@ const { default: userModal } = require("../db/models/userModal");
 const { generateJWT } = require("../utils/AuthToken");
 const findAllUsers = async (req, res) => {
   try {
-    const users = await userModal.findAll(); 
+    const users = await userModal.findAll();
     res.send(users);
   } catch (error) {
     console.error("Error finding users:", error);
@@ -13,8 +13,13 @@ const findAllUsers = async (req, res) => {
 };
 const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log("🚀 ~ login ~ req.body:", req.body);
+  console.log(password);
+  console.log(email);
   if (!email || !password) {
-    return res.status(400).json({ error: "Please provide email and password" });
+    return res
+      .status(400)
+      .json({ message: "Please provide email and password" });
   }
 
   try {
@@ -22,21 +27,26 @@ const login = async (req, res) => {
     if (!userExists) {
       return res.status(404).json({ message: "User not found" });
     }
-
     const isPasswordValid = await bcrypt.compare(password, userExists.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(401).json({ message: "Invalid password" });
     }
     const token = generateJWT(userExists);
     return res
       .status(200)
       .cookie("token", token, {
         httpOnly: true,
-        maxAge: 3600000, 
-        secure: process.env.NODE_ENV === "production", 
+        maxAge: 3600000,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
       })
-      .json({ message: "Login successful" });
+      .json({
+        id: userExists.dataValues.id,
+        name: userExists.dataValues.name,
+        email: userExists.dataValues.email,
+        role: userExists.dataValues.role,
+        message: "Login successfull",
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });
@@ -52,10 +62,10 @@ const register = async (req, res) => {
     if (existingUser) {
       return res
         .status(409)
-        .json({ error: "User with this email already exists" });
+        .json({ message: "User with this email already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const id = uuid.v4(); 
+    const id = uuid.v4();
     console.log(typeof id);
     await userModal.create({
       id,
@@ -107,6 +117,16 @@ const findUserById = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+const logout = (req, res) => {
+  res.status(200).cookie("token", "", {
+    httpOnly: true,
+    maxAge: 0,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Logged out successfully 🙁" });
+};
+
 module.exports = {
   register,
   findAllUsers,
@@ -114,4 +134,5 @@ module.exports = {
   login,
   updateUser,
   findUserById,
+  logout,
 };
