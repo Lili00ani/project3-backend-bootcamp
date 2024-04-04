@@ -1,22 +1,22 @@
-const {
-  login,
-  register,
-  findAllUsers,
-  deleteUser,
-  updateUser,
-  findUserById,
-  logout,
-} = require("../controllers/authController");
-const express = require("express");
-const { isAuthenticated, isAuthorize } = require("../middlewares/verifyToken");
-const router = express.Router();
+// const {
+//   login,
+//   register,
+//   findAllUsers,
+//   deleteUser,
+//   updateUser,
+//   findUserById,
+//   logout,
+// } = require("../controllers/authController");
+// const express = require("express");
+// const { isAuthenticated, isAuthorize } = require("../middlewares/verifyToken");
+// const router = express.Router();
 
-router.post("/signin", login);
-router.post("/signup", register);
-router.delete("/:id", isAuthenticated, isAuthorize("admin"), deleteUser);
-router.put("/:id", isAuthenticated, isAuthorize("admin"), updateUser);
-router.get("/users", isAuthenticated, isAuthorize("admin"), findAllUsers);
-router.get("/:id", isAuthenticated, isAuthorize("admin"), findUserById);
-router.post("/logout", isAuthenticated, logout);
+// router.post("/signin", login);
+// router.post("/signup", register);
+// router.delete("/:id", isAuthenticated, isAuthorize("admin"), deleteUser);
+// router.put("/:id", isAuthenticated, isAuthorize("admin"), updateUser);
+// router.get("/users", isAuthenticated, isAuthorize("admin"), findAllUsers);
+// router.get("/:id", isAuthenticated, isAuthorize("admin"), findUserById);
+// router.post("/logout", isAuthenticated, logout);
 
-module.exports = router;
+// module.exports = router;

@@ -127,6 +127,12 @@ class BookingsController extends BaseController {
   //eventId, quantity_bought, payment_intent,
   async insertOne(eventId, quantity_bought, payment_intent, req, res) {
     try {
+      eventId = parseInt(eventId);
+
+      // Validate eventId
+      if (isNaN(eventId)) {
+        return res.status(400).json({ error: true, msg: "Invalid eventId" });
+      }
       const event = await this.eventModel.findByPk(eventId);
       console.log(eventId);
 
@@ -145,7 +151,7 @@ class BookingsController extends BaseController {
         // Create booking entry
         const booking = await this.model.create(
           {
-            userId: 1,
+            userId: "0a750c6d-758e-4113-806d-4061f49edd13",
             eventId: eventId,
             quantity_bought: quantity_bought,
             quantity_left: quantity_bought,
@@ -206,6 +212,58 @@ class BookingsController extends BaseController {
         await booking.save({ transaction: t });
         return res.json(booking);
       });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+
+  async getOngoingBooking(req, res) {
+    const { userId } = req.query;
+
+    try {
+      const output = await this.model.findAll({
+        include: [
+          {
+            model: this.eventModel,
+            as: "event",
+            where: {
+              statusId: {
+                [Op.or]: [2, 3, 4],
+              },
+            },
+          },
+        ],
+        where: { userId: userId },
+      });
+
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+
+  async getPastBooking(req, res) {
+    const { userId } = req.query;
+
+    try {
+      const output = await this.model.findAll({
+        include: [
+          {
+            model: this.eventModel,
+            as: "event",
+            where: {
+              statusId: {
+                [Op.or]: [5, 6],
+              },
+            },
+          },
+        ],
+        where: { userId: userId },
+      });
+
+      return res.json(output);
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: true, msg: err });

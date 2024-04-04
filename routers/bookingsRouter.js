@@ -24,6 +24,11 @@ class BookingsRouter {
       "/capacity/:eventId",
       this.controller.getAvailableCapacity.bind(this.controller)
     );
+    router.get(
+      "/current",
+      this.controller.getOngoingBooking.bind(this.controller)
+    );
+    router.get("/past", this.controller.getPastBooking.bind(this.controller));
     return router;
   }
 }
