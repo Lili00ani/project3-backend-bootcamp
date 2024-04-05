@@ -47,25 +47,52 @@ class EventsController extends BaseController {
   async searchByFilter(req, res) {
     const { keyword } = req.params;
     const { categories } = req.query;
+    let output;
     try {
       const categoryFilter = categories ? { id: categories } : {};
-      const output = await this.model.findAll({
-        where: {
-          title: { [Op.iLike]: `%${keyword}%` },
-        },
+      console.log(categoryFilter);
+
+      const queryOptions = {
         include: [
           { model: this.adminModel, as: "admin" },
           { model: this.venueModel, as: "venue" },
           { model: this.languageModel, as: "language" },
-          { model: this.categoryModel, as: "category", where: categoryFilter },
+          {
+            model: this.categoryModel,
+            as: "category",
+            where: categoryFilter,
+          },
         ],
-      });
+      };
+
+      if (keyword !== "all") {
+        queryOptions.where = {
+          title: { [Op.iLike]: `%${keyword}%` },
+        };
+        output = await this.model.findAll(queryOptions);
+        console.log("first");
+      } else {
+        output = await this.model.findAll(queryOptions);
+        console.log("second");
+      }
+
       return res.json(output);
     } catch (error) {
       console.error(error);
-      res.status(500).send("An error occurred while searching by title.");
+      return res
+        .status(500)
+        .send("An error occurred while searching by title.");
     }
   }
+
+  // async bookmarkEvent(req, res) {
+  //   const { eventId } = req.params;
+  //   const { userId } = req.body;
+
+  //   try {
+
+  //   }
+  // }
 }
 
 module.exports = EventsController;
