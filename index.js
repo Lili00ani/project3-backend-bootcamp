@@ -1,10 +1,25 @@
 const cors = require("cors");
 const express = require("express");
+const app = express();
+
 const { auth } = require("express-oauth2-jwt-bearer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
+const { auth: Auth0, requiresAuth } = require("express-openid-connect");
 
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  baseURL: process.env.FRONTEND_URL,
+  clientID: process.env.AUTH0CLIENTID,
+  issuerBaseURL: process.env.Auth0_URL,
+  secret: process.env.JWT_SECRET,
+};
+
+// The `auth` router attaches /login, /logout
+// and /callback routes to the baseURL
+app.use(Auth0(config));
 // importing Routers
 const EventsRouter = require("./routers/eventsRouter");
 const authRoutes = require("./routers/authRoutes");
@@ -54,7 +69,6 @@ const eventsRouter = new EventsRouter(eventsController).routes();
 const bookingsRouter = new BookingsRouter(bookingsController).routes();
 
 const PORT = process.env.PORT || 5000;
-const app = express();
 //parsing cookies
 app.use(cookieParser());
 
