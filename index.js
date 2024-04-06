@@ -49,7 +49,12 @@ const eventsController = new EventsController(
   language,
   venue
 );
-const bookingsController = new BookingsController(booking, event, payment);
+const bookingsController = new BookingsController(
+  booking,
+  event,
+  payment,
+  venue
+);
 const categoriesController = new CategoriesController(category);
 
 // inittializing Routers

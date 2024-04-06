@@ -6,10 +6,11 @@ const BACKEND_URL = process.env.BACKEND_URL;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 class BookingsController extends BaseController {
-  constructor(model, eventModel, paymentModel) {
+  constructor(model, eventModel, paymentModel, venueModel) {
     super(model);
     this.paymentModel = paymentModel;
     this.eventModel = eventModel;
+    this.venueModel = venueModel;
   }
   // get all the booking of one user
 
@@ -232,6 +233,7 @@ class BookingsController extends BaseController {
                 [Op.or]: [2, 3, 4],
               },
             },
+            include: [{ model: this.venueModel, as: "venue" }],
           },
         ],
         where: { userId: userId },

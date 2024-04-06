@@ -33,8 +33,8 @@ module.exports = {
       {
         address: "500 Bukit Merah View",
         postal_code: "159682",
-        lat: null,
-        lng: null,
+        lat: "1.2857349767816093",
+        lng: "103.82322767021527",
         country: "Singapore",
         created_at: new Date(),
         updated_at: new Date(),
@@ -42,8 +42,8 @@ module.exports = {
       {
         address: "28A Kreta Ayer Road",
         postal_code: "088995",
-        lat: null,
-        lng: null,
+        lat: "1.2809445074072483",
+        lng: "103.84284814197645",
         country: "Singapore",
         created_at: new Date(),
         updated_at: new Date(),
@@ -51,8 +51,8 @@ module.exports = {
       {
         address: "1 Engku Aman Turn",
         postal_code: "408528",
-        lat: null,
-        lng: null,
+        lat: "1.316506881902658",
+        lng: "103.8964838094283",
         country: "Singapore",
         created_at: new Date(),
         updated_at: new Date(),
