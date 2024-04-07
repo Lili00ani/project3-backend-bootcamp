@@ -59,23 +59,15 @@ const bookingsController = new BookingsController(
 );
 const categoriesController = new CategoriesController(category);
 
-// inittializing Routers
 const eventsRouter = new EventsRouter(eventsController).routes();
 const bookingsRouter = new BookingsRouter(bookingsController).routes();
 const categoriesRouter = new CategoriesRouter(categoriesController).routes();
-app.use(notFound);
 app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
-//parsing cookies
 app.use(cookieParser());
 
-// Enable reading JSON request bodies
 app.use(express.json());
-
-// Enable CORS access to this server
 app.use(cors({ credentials: true }));
-
-//testing with simple basic auth0,
 // const checkJwt = auth({
 //   audience: process.env.AUDIENCE,
 //   issuerBaseURL: process.env.ISSUER_BASE_URL,
@@ -85,8 +77,7 @@ const jwtCheck = auth({
   issuerBaseURL: process.env.ISSUER_BASE_URL,
   tokenSigningAlg: "RS256",
 });
-app.use(jwtCheck);
-// enable and use router
+console.log(jwtCheck);
 app.use("/events", eventsRouter);
 // app.use("/api/auth", authRoutes);
 app.use("/bookings", bookingsRouter);
