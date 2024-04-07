@@ -8,15 +8,15 @@ const {
   logout,
 } = require("../controllers/authController");
 const express = require("express");
+const { isAuthenticated, isAuthorize } = require("../middlewares/verifyToken");
 const router = express.Router();
-const { auth: Auth0, requiresAuth } = require("express-openid-connect");
 
-router.get("/signin", login);
-router.post("/signup", register);
-router.delete("/:id", requiresAuth, deleteUser);
-router.put("/:id", requiresAuth, updateUser);
-router.get("/users", requiresAuth, findAllUsers);
-router.get("/:id", requiresAuth, findUserById);
-router.post("/logout", requiresAuth, logout);
+// router.post("/signin", login);
+// router.post("/signup", register);
+// router.delete("/:id", isAuthenticated, isAuthorize("admin"), deleteUser);
+// router.put("/:id", isAuthenticated, isAuthorize("admin"), updateUser);
+// router.get("/users", isAuthenticated, isAuthorize("admin"), findAllUsers);
+// router.get("/:id", isAuthenticated, isAuthorize("admin"), findUserById);
+// router.post("/logout", isAuthenticated, logout);
 
-module.exports = router;
+// module.exports = router;
