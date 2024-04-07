@@ -62,27 +62,28 @@ const categoriesController = new CategoriesController(category);
 const eventsRouter = new EventsRouter(eventsController).routes();
 const bookingsRouter = new BookingsRouter(bookingsController).routes();
 const categoriesRouter = new CategoriesRouter(categoriesController).routes();
-app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
 
 app.use(express.json());
 app.use(cors({ credentials: true }));
-// const checkJwt = auth({
-//   audience: process.env.AUDIENCE,
-//   issuerBaseURL: process.env.ISSUER_BASE_URL,
-// });
 const jwtCheck = auth({
-  audience: process.env.AUDIENCE,
-  issuerBaseURL: process.env.ISSUER_BASE_URL,
-  tokenSigningAlg: "RS256",
+  audience: "https://eventlink/api",
+  issuerBaseURL: "https://dev-qfj7cdc7hakzv4wa.uk.auth0.com/",
+  // issuerBaseURL: 'https://dev-qfj7cdc7hakzv4wa.uk.auth0.com/',
+  // tokenSigningAlg: ["RS256"],
+  algorithms: ["RS256"],
 });
-console.log(jwtCheck);
+// app.use(jwtCheck);
+
 app.use("/events", eventsRouter);
 // app.use("/api/auth", authRoutes);
 app.use("/bookings", bookingsRouter);
 app.use("/categories", categoriesRouter);
 
+app.use(errorHandler);
+app.use(notFound);
 app.listen(PORT, () => {
   console.log(`Express Server listening on port ${PORT}!`);
 });
