@@ -19,15 +19,16 @@ const CategoriesController = require("./controllers/categoriesController");
 
 // importing DB
 const db = require("./db/models/index");
+const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 //connecting db
-// (async () => {
-//   try {
-//     await db.sequelize.authenticate();
-//     console.log("Database connection has been established successfully.");
-//   } catch (error) {
-//     console.error("Unable to connect to the database:", error);
-//   }
-// })();
+(async () => {
+  try {
+    await db.sequelize.authenticate();
+    console.log("Database connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+})();
 // initialising all the model name, to be updated.
 const {
   admin,
@@ -62,10 +63,11 @@ const categoriesController = new CategoriesController(category);
 const eventsRouter = new EventsRouter(eventsController).routes();
 const bookingsRouter = new BookingsRouter(bookingsController).routes();
 const categoriesRouter = new CategoriesRouter(categoriesController).routes();
-
+app.use(notFound);
+app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 //parsing cookies
-// app.use(cookieParser());
+app.use(cookieParser());
 
 // Enable reading JSON request bodies
 app.use(express.json());
@@ -84,7 +86,6 @@ const jwtCheck = auth({
   tokenSigningAlg: "RS256",
 });
 app.use(jwtCheck);
-
 // enable and use router
 app.use("/events", eventsRouter);
 // app.use("/api/auth", authRoutes);

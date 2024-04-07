@@ -1,79 +1,79 @@
-const bcrypt = require("bcrypt");
-const user = require("../db/models/userModal");
-const uuid = require("uuid");
-const { default: userModal } = require("../db/models/userModal");
-const { generateJWT } = require("../utils/AuthToken");
-const findAllUsers = async (req, res) => {
-  try {
-    const users = await userModal.findAll();
-    res.send(users);
-  } catch (error) {
-    console.error("Error finding users:", error);
-  }
-};
-const login = async (req, res) => {
-  const { email, password } = req.body;
-  console.log("🚀 ~ login ~ req.body:", req.body);
-  console.log(password);
-  console.log(email);
-  if (!email || !password) {
-    return res
-      .status(400)
-      .json({ message: "Please provide email and password" });
-  }
+// const bcrypt = require("bcrypt");
+// const user = require("../db/models/userModal");
+// const uuid = require("uuid");
+// const { default: userModal } = require("../db/models/userModal");
+// const { generateJWT } = require("../utils/AuthToken");
+// const findAllUsers = async (req, res) => {
+//   try {
+//     const users = await userModal.findAll();
+//     res.send(users);
+//   } catch (error) {
+//     console.error("Error finding users:", error);
+//   }
+// };
+// const login = async (req, res) => {
+//   const { email, password } = req.body;
+//   console.log("🚀 ~ login ~ req.body:", req.body);
+//   console.log(password);
+//   console.log(email);
+//   if (!email || !password) {
+//     return res
+//       .status(400)
+//       .json({ message: "Please provide email and password" });
+//   }
 
-  try {
-    const userExists = await userModal.findOne({ where: { email } });
-    if (!userExists) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const isPasswordValid = await bcrypt.compare(password, userExists.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid password" });
-    }
-    const token = generateJWT(userExists);
-    return res
-      .status(200)
-      .cookie("token", token, {
-        httpOnly: true,
-        maxAge: 3600000,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      })
-      .json({
-        id: userExists.dataValues.id,
-        name: userExists.dataValues.name,
-        email: userExists.dataValues.email,
-        role: userExists.dataValues.role,
-        message: "Login successfull",
-      });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-};
-const register = async (req, res) => {
-  const { name, email, password, role } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "Please fill all the fields" });
-  }
-  try {
-    const existingUser = await userModal.findOne({ where: { email } });
-    if (existingUser) {
-      return res
-        .status(409)
-        .json({ message: "User with this email already exists" });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const id = uuid.v4();
-    console.log(typeof id);
-    await userModal.create({
-      id,
-      name,
-      email,
-      password: hashedPassword,
-      role,
-    });
+//   try {
+//     const userExists = await userModal.findOne({ where: { email } });
+//     if (!userExists) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     const isPasswordValid = await bcrypt.compare(password, userExists.password);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ message: "Invalid password" });
+//     }
+//     const token = generateJWT(userExists);
+//     return res
+//       .status(200)
+//       .cookie("token", token, {
+//         httpOnly: true,
+//         maxAge: 3600000,
+//         secure: process.env.NODE_ENV === "production",
+//         sameSite: "strict",
+//       })
+//       .json({
+//         id: userExists.dataValues.id,
+//         name: userExists.dataValues.name,
+//         email: userExists.dataValues.email,
+//         role: userExists.dataValues.role,
+//         message: "Login successfull",
+//       });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+// const register = async (req, res) => {
+//   const { name, email, password, role } = req.body;
+//   if (!name || !email || !password) {
+//     return res.status(400).json({ message: "Please fill all the fields" });
+//   }
+//   try {
+//     const existingUser = await userModal.findOne({ where: { email } });
+//     if (existingUser) {
+//       return res
+//         .status(409)
+//         .json({ message: "User with this email already exists" });
+//     }
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const id = uuid.v4();
+//     console.log(typeof id);
+//     await userModal.create({
+//       id,
+//       name,
+//       email,
+//       password: hashedPassword,
+//       role,
+//     });
 
 //     return res.status(201).json({ message: "User registered successfully" });
 //   } catch (error) {

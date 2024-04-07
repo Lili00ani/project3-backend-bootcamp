@@ -19,7 +19,7 @@ class BookingsController extends BaseController {
   // cancel a booking
 
   //check number of tickets bought per event
-  async getAvailableCapacity(req, res) {
+  async getAvailableCapacity(req, res, next) {
     const { eventId } = req.params;
     try {
       const totalTicketsBought = await this.model.sum("quantity_bought", {
@@ -41,6 +41,7 @@ class BookingsController extends BaseController {
       res.json({ availableCapacity });
     } catch (err) {
       console.log(err);
+      next(err);
       // throw new Error("Error calculating available capacity");
       return res.status(400).json({ error: true, msg: err });
     }
