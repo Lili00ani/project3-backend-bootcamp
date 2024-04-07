@@ -1,6 +1,6 @@
 const cors = require("cors");
 const express = require("express");
-const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
+const { auth } = require("express-oauth2-jwt-bearer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 require("dotenv").config();
 // const cookieParser = require("cookie-parser");
@@ -49,7 +49,12 @@ const eventsController = new EventsController(
   language,
   venue
 );
-const bookingsController = new BookingsController(booking, event, payment);
+const bookingsController = new BookingsController(
+  booking,
+  event,
+  payment,
+  venue
+);
 const categoriesController = new CategoriesController(category);
 
 // inittializing Routers
