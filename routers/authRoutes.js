@@ -1,15 +1,15 @@
-// const {
-//   login,
-//   register,
-//   findAllUsers,
-//   deleteUser,
-//   updateUser,
-//   findUserById,
-//   logout,
-// } = require("../controllers/authController");
-// const express = require("express");
-// const { isAuthenticated, isAuthorize } = require("../middlewares/verifyToken");
-// const router = express.Router();
+const {
+  login,
+  register,
+  findAllUsers,
+  deleteUser,
+  updateUser,
+  findUserById,
+  logout,
+} = require("../controllers/authController");
+const express = require("express");
+const { isAuthenticated, isAuthorize } = require("../middlewares/verifyToken");
+const router = express.Router();
 
 // router.post("/signin", login);
 // router.post("/signup", register);
