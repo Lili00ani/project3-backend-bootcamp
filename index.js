@@ -11,11 +11,13 @@ const EventsRouter = require("./routers/eventsRouter");
 // const authRoutes = require("./routers/authRoutes");
 const BookingsRouter = require("./routers/bookingsRouter");
 const CategoriesRouter = require("./routers/categoriesRouter");
+const UsersRouter = require("./routers/usersRouter");
 
 // importing Controllers
 const EventsController = require("./controllers/eventsController");
 const BookingsController = require("./controllers/bookingsController");
 const CategoriesController = require("./controllers/categoriesController");
+const UsersController = require("./controllers/usersController");
 
 // importing DB
 const db = require("./db/models/index");
@@ -58,10 +60,12 @@ const bookingsController = new BookingsController(
   venue
 );
 const categoriesController = new CategoriesController(category);
+const usersController = new UsersController(user);
 
 const eventsRouter = new EventsRouter(eventsController).routes();
 const bookingsRouter = new BookingsRouter(bookingsController).routes();
 const categoriesRouter = new CategoriesRouter(categoriesController).routes();
+const usersRouter = new UsersRouter(usersController).routes();
 
 const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
@@ -70,9 +74,8 @@ app.use(express.json());
 app.use(cors({ credentials: true }));
 const jwtCheck = auth({
   audience: "https://eventlink/api",
-  issuerBaseURL: "https://dev-qfj7cdc7hakzv4wa.uk.auth0.com/",
+  issuerBaseURL: "https://dev-3ghh1k7pd6w4ovjv.us.auth0.com/api/v2/",
   // issuerBaseURL: 'https://dev-qfj7cdc7hakzv4wa.uk.auth0.com/',
-  // tokenSigningAlg: ["RS256"],
   algorithms: ["RS256"],
 });
 // app.use(jwtCheck);
@@ -81,6 +84,7 @@ app.use("/events", eventsRouter);
 // app.use("/api/auth", authRoutes);
 app.use("/bookings", bookingsRouter);
 app.use("/categories", categoriesRouter);
+app.use("/users", usersRouter);
 
 app.use(errorHandler);
 app.use(notFound);

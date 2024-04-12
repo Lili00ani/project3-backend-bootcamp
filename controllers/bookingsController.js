@@ -51,10 +51,13 @@ class BookingsController extends BaseController {
   async createCheckoutSession(req, res) {
     const { eventId } = req.params;
     const { quantity_bought } = req.body;
+    const { user_id } = req.body;
 
     try {
       // Event price
       const event = await this.eventModel.findByPk(eventId);
+
+      console.log("CheckoutUser ID:", user_id);
 
       // Create a checkout session
       const session = await stripe.checkout.sessions.create({
@@ -74,7 +77,7 @@ class BookingsController extends BaseController {
         mode: "payment",
         ui_mode: "embedded",
 
-        return_url: `${FRONTEND_URL}/return?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&quantity=${quantity_bought}`,
+        return_url: `${FRONTEND_URL}/return?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&quantity=${quantity_bought}&user=${user_id}`,
       });
       res.send({ clientSecret: session.client_secret });
     } catch (err) {
@@ -88,13 +91,14 @@ class BookingsController extends BaseController {
     try {
       const eventId = req.query.eventId;
       const quantity_bought = req.query.quantity;
+      const user = req.query.user;
 
       const session = await stripe.checkout.sessions.retrieve(
         req.query.session_id
       );
       const payment_intent = session.payment_intent;
-      console.log(eventId);
-      console.log(payment_intent);
+      console.log("eventId:", eventId);
+      console.log("getSessionUser ID:", user);
 
       //check if payment intent is successful and whether have already store in database, if not insert new one
       if (session.status === "complete") {
@@ -108,6 +112,7 @@ class BookingsController extends BaseController {
             eventId,
             quantity_bought,
             payment_intent,
+            user,
             req,
             res
           );
@@ -127,7 +132,7 @@ class BookingsController extends BaseController {
 
   //create a booking
   //eventId, quantity_bought, payment_intent,
-  async insertOne(eventId, quantity_bought, payment_intent, req, res) {
+  async insertOne(eventId, quantity_bought, payment_intent, user, req, res) {
     try {
       eventId = parseInt(eventId);
 
@@ -153,7 +158,7 @@ class BookingsController extends BaseController {
         // Create booking entry
         const booking = await this.model.create(
           {
-            userId: "0a750c6d-758e-4113-806d-4061f49edd13",
+            userId: user,
             eventId: eventId,
             quantity_bought: quantity_bought,
             quantity_left: quantity_bought,
@@ -224,6 +229,7 @@ class BookingsController extends BaseController {
     const { userId } = req.query;
 
     try {
+      console.log("getOngoing user:", userId);
       const output = await this.model.findAll({
         include: [
           {
