@@ -183,7 +183,7 @@ class BookingsController extends BaseController {
   async insertOneFree(req, res) {
     try {
       console.log(req.body);
-      const { eventId, quantity_bought, payment_intent } = req.body;
+      const { eventId, quantity_bought, payment_intent, user_id } = req.body;
 
       const event = await this.eventModel.findByPk(eventId);
       console.log(eventId);
@@ -203,7 +203,7 @@ class BookingsController extends BaseController {
         // Create booking entry
         const booking = await this.model.create(
           {
-            userId: 1,
+            userId: user_id,
             eventId: eventId,
             quantity_bought: quantity_bought,
             quantity_left: quantity_bought,
