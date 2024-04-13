@@ -10,7 +10,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       name: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.STRING,
       },
       email: {

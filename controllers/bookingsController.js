@@ -51,10 +51,13 @@ class BookingsController extends BaseController {
   async createCheckoutSession(req, res) {
     const { eventId } = req.params;
     const { quantity_bought } = req.body;
+    const { user_id } = req.body;
 
     try {
       // Event price
       const event = await this.eventModel.findByPk(eventId);
+
+      console.log("CheckoutUser ID:", user_id);
 
       // Create a checkout session
       const session = await stripe.checkout.sessions.create({
@@ -74,7 +77,7 @@ class BookingsController extends BaseController {
         mode: "payment",
         ui_mode: "embedded",
 
-        return_url: `${FRONTEND_URL}/return?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&quantity=${quantity_bought}`,
+        return_url: `${FRONTEND_URL}/return?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&quantity=${quantity_bought}&user=${user_id}`,
       });
       res.send({ clientSecret: session.client_secret });
     } catch (err) {
@@ -88,15 +91,17 @@ class BookingsController extends BaseController {
     try {
       const eventId = req.query.eventId;
       const quantity_bought = req.query.quantity;
+      const user = req.query.user;
 
       const session = await stripe.checkout.sessions.retrieve(
         req.query.session_id
       );
       const payment_intent = session.payment_intent;
-      console.log(eventId);
-      console.log(payment_intent);
+      console.log("eventId:", eventId);
+      console.log("getSessionUser ID:", user);
+      console.log("sessionStatus:", session.status);
 
-      //check if payment intent is successful and whether have already store in database, if not insert new one
+      // Check if payment intent is successful and whether it's already stored in the database, if not, insert a new one
       if (session.status === "complete") {
         const payment = await this.paymentModel.findOne({
           where: {
@@ -108,12 +113,15 @@ class BookingsController extends BaseController {
             eventId,
             quantity_bought,
             payment_intent,
+            user,
             req,
             res
           );
-          return;
+          console.log("Payment inserted successfully");
         }
       }
+
+      // Return the response with session status and payment status
       res.send({
         status: session.status,
         payment_status: session.payment_status,
@@ -121,13 +129,13 @@ class BookingsController extends BaseController {
       });
     } catch (err) {
       console.log(err);
-      return res.status(400).json({ error: true, msg: err });
+      res.status(400).json({ error: true, msg: err.message });
     }
   }
 
   //create a booking
   //eventId, quantity_bought, payment_intent,
-  async insertOne(eventId, quantity_bought, payment_intent, req, res) {
+  async insertOne(eventId, quantity_bought, payment_intent, user, req, res) {
     try {
       eventId = parseInt(eventId);
 
@@ -153,7 +161,7 @@ class BookingsController extends BaseController {
         // Create booking entry
         const booking = await this.model.create(
           {
-            userId: "0a750c6d-758e-4113-806d-4061f49edd13",
+            userId: user,
             eventId: eventId,
             quantity_bought: quantity_bought,
             quantity_left: quantity_bought,
@@ -167,7 +175,7 @@ class BookingsController extends BaseController {
 
         // Save booking in database
         await booking.save({ transaction: t });
-        return res.json(booking);
+        // return res.json(booking);
       });
     } catch (err) {
       console.log(err);
@@ -178,7 +186,7 @@ class BookingsController extends BaseController {
   async insertOneFree(req, res) {
     try {
       console.log(req.body);
-      const { eventId, quantity_bought, payment_intent } = req.body;
+      const { eventId, quantity_bought, payment_intent, user_id } = req.body;
 
       const event = await this.eventModel.findByPk(eventId);
       console.log(eventId);
@@ -198,7 +206,7 @@ class BookingsController extends BaseController {
         // Create booking entry
         const booking = await this.model.create(
           {
-            userId: 1,
+            userId: user_id,
             eventId: eventId,
             quantity_bought: quantity_bought,
             quantity_left: quantity_bought,
@@ -224,6 +232,7 @@ class BookingsController extends BaseController {
     const { userId } = req.query;
 
     try {
+      console.log("getOngoing user:", userId);
       const output = await this.model.findAll({
         include: [
           {
