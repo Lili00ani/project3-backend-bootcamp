@@ -99,8 +99,9 @@ class BookingsController extends BaseController {
       const payment_intent = session.payment_intent;
       console.log("eventId:", eventId);
       console.log("getSessionUser ID:", user);
+      console.log("sessionStatus:", session.status);
 
-      //check if payment intent is successful and whether have already store in database, if not insert new one
+      // Check if payment intent is successful and whether it's already stored in the database, if not, insert a new one
       if (session.status === "complete") {
         const payment = await this.paymentModel.findOne({
           where: {
@@ -116,9 +117,11 @@ class BookingsController extends BaseController {
             req,
             res
           );
-          return;
+          console.log("Payment inserted successfully");
         }
       }
+
+      // Return the response with session status and payment status
       res.send({
         status: session.status,
         payment_status: session.payment_status,
@@ -126,7 +129,7 @@ class BookingsController extends BaseController {
       });
     } catch (err) {
       console.log(err);
-      return res.status(400).json({ error: true, msg: err });
+      res.status(400).json({ error: true, msg: err.message });
     }
   }
 
@@ -172,7 +175,7 @@ class BookingsController extends BaseController {
 
         // Save booking in database
         await booking.save({ transaction: t });
-        return res.json(booking);
+        // return res.json(booking);
       });
     } catch (err) {
       console.log(err);
