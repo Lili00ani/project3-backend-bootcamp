@@ -61,16 +61,15 @@ class BookingsController extends BaseController {
       service: "gmail",
       secure: false, // Use `true` for port 465, `false` for all other ports
       auth: {
-        user: "eventlink.ptbc9@gmail.com",
-        pass: "jhsu kyho asqw jtur",
-        // pass: "Ptbc9123!",
+        user: process.env.USER_APP_EMAIL,
+        pass: process.env.USER_APP_PASSWORD,
       },
     });
 
     const mailOptions = {
       from: {
         name: "Event Link",
-        address: "eventlink.ptbc9@gmail.com",
+        address: process.env.USER_APP_EMAIL,
       },
       to: req?.body?.email,
       subject: "Event Booking Email",
