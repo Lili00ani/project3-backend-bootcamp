@@ -6,18 +6,22 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const app = express();
+
 // importing Routers
 const EventsRouter = require("./routers/eventsRouter");
-// const authRoutes = require("./routers/authRoutes");
 const BookingsRouter = require("./routers/bookingsRouter");
 const CategoriesRouter = require("./routers/categoriesRouter");
 const UsersRouter = require("./routers/usersRouter");
+const VenuesRouter = require("./routers/venuesRouter");
+const AdminsRouter = require("./routers/adminsRouter");
 
 // importing Controllers
 const EventsController = require("./controllers/eventsController");
 const BookingsController = require("./controllers/bookingsController");
 const CategoriesController = require("./controllers/categoriesController");
 const UsersController = require("./controllers/usersController");
+const VenuesController = require("./controllers/venuesController");
+const AdminsController = require("./controllers/adminsController");
 
 // importing DB
 const db = require("./db/models/index");
@@ -51,7 +55,8 @@ const eventsController = new EventsController(
   admin,
   category,
   language,
-  venue
+  venue,
+  status
 );
 const bookingsController = new BookingsController(
   booking,
@@ -59,13 +64,21 @@ const bookingsController = new BookingsController(
   payment,
   venue
 );
-const categoriesController = new CategoriesController(category);
+const categoriesController = new CategoriesController(
+  category,
+  language,
+  status
+);
 const usersController = new UsersController(user);
+const venuesController = new VenuesController(venue);
+const adminsController = new AdminsController(admin);
 
 const eventsRouter = new EventsRouter(eventsController).routes();
 const bookingsRouter = new BookingsRouter(bookingsController).routes();
 const categoriesRouter = new CategoriesRouter(categoriesController).routes();
 const usersRouter = new UsersRouter(usersController).routes();
+const venuesRouter = new VenuesRouter(venuesController).routes();
+const adminsRouter = new AdminsRouter(adminsController).routes();
 
 const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
@@ -85,6 +98,8 @@ app.use("/events", eventsRouter);
 app.use("/bookings", bookingsRouter);
 app.use("/categories", categoriesRouter);
 app.use("/users", usersRouter);
+app.use("/venues", venuesRouter);
+app.use("/admins", adminsRouter);
 
 app.use(errorHandler);
 app.use(notFound);
