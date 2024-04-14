@@ -29,6 +29,10 @@ class BookingsRouter {
       this.controller.getOngoingBooking.bind(this.controller)
     );
     router.get("/past", this.controller.getPastBooking.bind(this.controller));
+    router.get(
+      "/:eventId",
+      this.controller.getAllBookingsForEvent.bind(this.controller)
+    );
     return router;
   }
 }

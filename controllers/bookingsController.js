@@ -6,11 +6,12 @@ const BACKEND_URL = process.env.BACKEND_URL;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 class BookingsController extends BaseController {
-  constructor(model, eventModel, paymentModel, venueModel) {
+  constructor(model, eventModel, paymentModel, venueModel, userModel) {
     super(model);
     this.paymentModel = paymentModel;
     this.eventModel = eventModel;
     this.venueModel = venueModel;
+    this.userModel = userModel;
   }
   // get all the booking of one user
 
@@ -279,6 +280,25 @@ class BookingsController extends BaseController {
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: true, msg: err });
+    }
+  }
+
+  async getAllBookingsForEvent(req, res, next) {
+    const { eventId } = req.params;
+
+    try {
+      const bookings = await this.model.findAll({
+        where: {
+          eventId: eventId,
+          booking_status: "complete",
+        },
+        include: [{ model: this.userModel, as: "user" }],
+      });
+
+      res.json({ bookings });
+    } catch (err) {
+      console.log(err);
+      next(err);
     }
   }
 }

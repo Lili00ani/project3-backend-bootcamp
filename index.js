@@ -62,7 +62,8 @@ const bookingsController = new BookingsController(
   booking,
   event,
   payment,
-  venue
+  venue,
+  user
 );
 const categoriesController = new CategoriesController(
   category,
