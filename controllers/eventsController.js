@@ -106,6 +106,7 @@ class EventsController extends BaseController {
       end,
       statusId,
       capacity,
+      image_link,
     } = req.body;
     try {
       const newEvent = await this.model.create({
@@ -120,6 +121,7 @@ class EventsController extends BaseController {
         end: end,
         statusId: statusId,
         capacity: capacity,
+        image_link: image_link,
       });
 
       return res.json(newEvent);

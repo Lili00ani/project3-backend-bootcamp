@@ -79,6 +79,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      image_link: {
+        type: DataTypes.TEXT,
+      },
     },
     {
       sequelize,
