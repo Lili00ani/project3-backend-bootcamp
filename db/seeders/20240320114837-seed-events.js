@@ -16,6 +16,8 @@ module.exports = {
         end: new Date("2024-04-20T18:00:00"),
         status_id: 2,
         capacity: 10,
+        image_link:
+          "https://imgtr.ee/images/2024/04/14/e2dd8da66ca36f3bc7b32812d9c50d31.jpeg",
         created_at: new Date(),
         updated_at: new Date(),
       },
@@ -32,6 +34,8 @@ module.exports = {
         end: new Date("2024-04-20T20:00:00"),
         status_id: 2,
         capacity: 15,
+        image_link:
+          "https://imgtr.ee/images/2024/04/14/c574a16a8a76eb916e008ef3ab31cb7c.jpeg",
         created_at: new Date(),
         updated_at: new Date(),
       },
@@ -47,6 +51,8 @@ module.exports = {
         end: new Date("2024-04-18T22:00:00"),
         status_id: 2,
         capacity: 15,
+        image_link:
+          "https://imgtr.ee/images/2024/04/14/156aa4b235d6e1f452c276803c01bef3.jpeg",
         created_at: new Date(),
         updated_at: new Date(),
       },
@@ -63,6 +69,8 @@ module.exports = {
         end: new Date("2024-04-29T15:00:00"),
         status_id: 3,
         capacity: 15,
+        image_link:
+          "https://imgtr.ee/images/2024/04/14/a059983c388541999cca2428364d66bf.jpeg",
         created_at: new Date(),
         updated_at: new Date(),
       },
@@ -78,6 +86,8 @@ module.exports = {
         start: new Date("2024-04-22T10:00:00"),
         end: new Date("2024-04-22T16:00:00"),
         status_id: 2,
+        image_link:
+          "https://imgtr.ee/images/2024/04/14/589b7e8869fb4dddce7665aa174444af.jpeg",
         capacity: 9,
         created_at: new Date(),
         updated_at: new Date(),

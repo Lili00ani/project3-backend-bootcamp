@@ -82,6 +82,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
+      image_link: {
+        type: Sequelize.TEXT,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
