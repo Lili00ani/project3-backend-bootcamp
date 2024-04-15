@@ -13,6 +13,7 @@ class EventsRouter {
     );
     router.post("/", this.controller.insertOne.bind(this.controller));
     router.get("/:eventId", this.controller.getOne.bind(this.controller));
+    router.delete("/:eventId", this.controller.deleteOne.bind(this.controller));
     router.get(
       "/search/:keyword",
       this.controller.searchByFilter.bind(this.controller)

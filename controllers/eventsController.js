@@ -71,6 +71,7 @@ class EventsController extends BaseController {
             where: categoryFilter,
           },
         ],
+        where: { statusId: 2 },
       };
 
       if (keyword !== "all") {
@@ -90,6 +91,21 @@ class EventsController extends BaseController {
       return res
         .status(500)
         .send("An error occurred while searching by title.");
+    }
+  }
+
+  async deleteOne(req, res) {
+    const { eventId } = req.params;
+    try {
+      const event = await this.model.findByPk(eventId);
+      if (!event) {
+        return res.status(404).json({ error: true, msg: "Event not found" });
+      }
+      await event.destroy();
+      return res.json({ success: true, msg: "Event deleted successfully" });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
     }
   }
 
