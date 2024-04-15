@@ -1,13 +1,21 @@
 const BaseController = require("./baseController");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 class EventsController extends BaseController {
-  constructor(model, adminModel, categoryModel, languageModel, venueModel) {
+  constructor(
+    model,
+    adminModel,
+    categoryModel,
+    languageModel,
+    venueModel,
+    statusModel
+  ) {
     super(model);
     this.adminModel = adminModel;
     this.categoryModel = categoryModel;
     this.languageModel = languageModel;
     this.venueModel = venueModel;
+    this.statusModel = statusModel;
   }
 
   // Retrieve ongoing events with the associated admin for homepage
@@ -85,14 +93,57 @@ class EventsController extends BaseController {
     }
   }
 
-  // async bookmarkEvent(req, res) {
-  //   const { eventId } = req.params;
-  //   const { userId } = req.body;
+  async insertOne(req, res) {
+    const {
+      title,
+      description,
+      languageId,
+      categoryId,
+      venueId,
+      adminId,
+      price,
+      start,
+      end,
+      statusId,
+      capacity,
+      image_link,
+    } = req.body;
+    try {
+      const newEvent = await this.model.create({
+        title: title,
+        description: description,
+        languageId: languageId,
+        categoryId: categoryId,
+        venueId: venueId,
+        adminId: adminId,
+        price: price,
+        start: start,
+        end: end,
+        statusId: statusId,
+        capacity: capacity,
+        image_link: image_link,
+      });
 
-  //   try {
+      return res.json(newEvent);
+    } catch (err) {
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
 
-  //   }
-  // }
+  async getAllEventsOrganisedByOneAdmin(req, res) {
+    try {
+      const { adminId } = req.body;
+      console.log(adminId);
+      const output = await this.model.findAll({
+        where: { adminId: adminId },
+        include: [{ model: this.statusModel, as: "status" }],
+      });
+      return res.json(output);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
 }
 
 module.exports = EventsController;
