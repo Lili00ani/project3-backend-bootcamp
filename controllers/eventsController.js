@@ -25,6 +25,7 @@ class EventsController extends BaseController {
       const output = await this.model.findAll({
         include: [{ model: this.adminModel, as: "admin" }],
         where: { statusId: 2 },
+        order: [["start", "ASC"]],
       });
       return res.json(output);
     } catch (err) {
@@ -72,6 +73,7 @@ class EventsController extends BaseController {
           },
         ],
         where: { statusId: 2 },
+        order: [["start", "ASC"]],
       };
 
       if (keyword !== "all") {

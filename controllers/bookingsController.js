@@ -104,6 +104,8 @@ class BookingsController extends BaseController {
       console.log("getSessionUser ID:", user);
       console.log("sessionStatus:", session.status);
 
+      const event = await this.eventModel.findOne({ where: { id: eventId } });
+
       // Check if payment intent is successful and whether it's already stored in the database, if not, insert a new one
       if (session.status === "complete") {
         const payment = await this.paymentModel.findOne({
@@ -502,6 +504,8 @@ class BookingsController extends BaseController {
                       style="padding: 0 2.5em; text-align: center"
                     >
                       <h2>Your Event booking is done.</h2>
+            <h4>${event && event.title}</h4>
+            <h4>Tickets bought: ${quantity_bought}</h4>
                       <h3>Contact Us for queries</h3>
                       <p>
                         <a
@@ -665,6 +669,7 @@ class BookingsController extends BaseController {
           },
         ],
         where: { userId: userId },
+        order: [[{ model: this.eventModel, as: "event" }, "start", "ASC"]],
       });
 
       return res.json(output);
