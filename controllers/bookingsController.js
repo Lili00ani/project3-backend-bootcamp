@@ -54,27 +54,97 @@ class BookingsController extends BaseController {
     const { eventId } = req.params;
     const { quantity_bought } = req.body;
     const { user_id } = req.body;
-    console.log(req?.body?.email);
-    let transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      service: "gmail",
-      secure: false, // Use `true` for port 465, `false` for all other ports
-      auth: {
-        user: process.env.USER_APP_EMAIL,
-        pass: process.env.USER_APP_PASSWORD,
-      },
-    });
 
-    const mailOptions = {
-      from: {
-        name: "Event Link",
-        address: process.env.USER_APP_EMAIL,
-      },
-      to: req?.body?.email,
-      subject: "Event Booking Email",
-      text: "Your Event booking is done.",
-      html: `
+    try {
+      // Event price
+      const event = await this.eventModel.findByPk(eventId);
+
+      // console.log("CheckoutUser ID:", user_id);
+
+      // Create a checkout session
+      const session = await stripe.checkout.sessions.create({
+        ui_mode: "embedded",
+        line_items: [
+          {
+            price_data: {
+              currency: "SGD",
+              product_data: {
+                name: event.title,
+              },
+              unit_amount: event.price * 100,
+            },
+            quantity: quantity_bought,
+          },
+        ],
+        mode: "payment",
+        ui_mode: "embedded",
+
+        return_url: `${FRONTEND_URL}/return?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&quantity=${quantity_bought}&user=${user_id}`,
+      });
+      res.send({ clientSecret: session.client_secret });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: true, msg: err });
+    }
+  }
+
+  //handle success
+  async getSessionStatus(req, res) {
+    try {
+      const eventId = req.query.eventId;
+      const quantity_bought = req.query.quantity;
+      const user = req.query.user;
+
+      const session = await stripe.checkout.sessions.retrieve(
+        req.query.session_id
+      );
+      const payment_intent = session.payment_intent;
+      console.log("eventId:", eventId);
+      console.log("getSessionUser ID:", user);
+      console.log("sessionStatus:", session.status);
+
+      // Check if payment intent is successful and whether it's already stored in the database, if not, insert a new one
+      if (session.status === "complete") {
+        const payment = await this.paymentModel.findOne({
+          where: {
+            payment_intent: payment_intent,
+          },
+        });
+        if (!payment) {
+          await this.insertOne(
+            eventId,
+            quantity_bought,
+            payment_intent,
+            user,
+            req,
+            res
+          );
+          console.log("Payment inserted successfully");
+        }
+      }
+
+      // Return the response with session status and payment status
+      console.log(session.customer_details.email);
+      let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        service: "gmail",
+        secure: false, // Use `true` for port 465, `false` for all other ports
+        auth: {
+          user: process.env.USER_APP_EMAIL,
+          pass: process.env.USER_APP_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: {
+          name: "Event Link",
+          address: process.env.USER_APP_EMAIL,
+        },
+        to: session?.customer_details?.email,
+        subject: "Event Booking Email",
+        text: "Your Event booking is done.",
+        html: `
       <!DOCTYPE html>
 <html
   lang="en"
@@ -452,91 +522,22 @@ class BookingsController extends BaseController {
 </html>
 
       `,
-      attachments: [
-        {
-          filename: "../done.png",
-          path: path.join(__dirname, "../done.png"),
-          contentType: "image/jpg",
-        },
-      ],
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-    try {
-      // Event price
-      const event = await this.eventModel.findByPk(eventId);
-
-      // console.log("CheckoutUser ID:", user_id);
-
-      // Create a checkout session
-      const session = await stripe.checkout.sessions.create({
-        ui_mode: "embedded",
-        line_items: [
+        attachments: [
           {
-            price_data: {
-              currency: "SGD",
-              product_data: {
-                name: event.title,
-              },
-              unit_amount: event.price * 100,
-            },
-            quantity: quantity_bought,
+            filename: "../done.png",
+            path: path.join(__dirname, "../done.png"),
+            contentType: "image/jpg",
           },
         ],
-        mode: "payment",
-        ui_mode: "embedded",
+      };
 
-        return_url: `${FRONTEND_URL}/return?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&quantity=${quantity_bought}&user=${user_id}`,
-      });
-      res.send({ clientSecret: session.client_secret });
-    } catch (err) {
-      console.log(err);
-      return res.status(400).json({ error: true, msg: err });
-    }
-  }
-
-  //handle success
-  async getSessionStatus(req, res) {
-    try {
-      const eventId = req.query.eventId;
-      const quantity_bought = req.query.quantity;
-      const user = req.query.user;
-
-      const session = await stripe.checkout.sessions.retrieve(
-        req.query.session_id
-      );
-      const payment_intent = session.payment_intent;
-      console.log("eventId:", eventId);
-      console.log("getSessionUser ID:", user);
-      console.log("sessionStatus:", session.status);
-
-      // Check if payment intent is successful and whether it's already stored in the database, if not, insert a new one
-      if (session.status === "complete") {
-        const payment = await this.paymentModel.findOne({
-          where: {
-            payment_intent: payment_intent,
-          },
-        });
-        if (!payment) {
-          await this.insertOne(
-            eventId,
-            quantity_bought,
-            payment_intent,
-            user,
-            req,
-            res
-          );
-          console.log("Payment inserted successfully");
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
         }
-      }
-
-      // Return the response with session status and payment status
+      });
       res.send({
         status: session.status,
         payment_status: session.payment_status,
