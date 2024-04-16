@@ -87,7 +87,7 @@ app.use(express.json());
 app.use(cors({ credentials: true }));
 const jwtCheck = auth({
   audience: "https://eventlink/api",
-  issuerBaseURL: "https://dev-3ghh1k7pd6w4ovjv.us.auth0.com/api/v2/",
+  issuerBaseURL: process.env.ISSUER_BASE_URL,
   algorithms: ["RS256"],
 });
 
