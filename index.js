@@ -41,7 +41,6 @@ const {
   booking,
   category,
   event,
-  image,
   language,
   payment,
   status,
@@ -89,13 +88,10 @@ app.use(cors({ credentials: true }));
 const jwtCheck = auth({
   audience: "https://eventlink/api",
   issuerBaseURL: "https://dev-3ghh1k7pd6w4ovjv.us.auth0.com/api/v2/",
-  // issuerBaseURL: 'https://dev-qfj7cdc7hakzv4wa.uk.auth0.com/',
   algorithms: ["RS256"],
 });
-// app.use(jwtCheck);
 
 app.use("/events", eventsRouter);
-// app.use("/api/auth", authRoutes);
 app.use("/bookings", bookingsRouter);
 app.use("/categories", categoriesRouter);
 app.use("/users", usersRouter);

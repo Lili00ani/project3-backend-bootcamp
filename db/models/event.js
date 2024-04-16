@@ -15,19 +15,10 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.admin);
       this.belongsTo(models.status);
       this.belongsToMany(models.user, {
-        as: "favorited_by_users",
-        through: "fav_event",
-      });
-      this.belongsToMany(models.user, {
-        as: "waitlisted_by_users",
-        through: "waitlist",
-      });
-      this.belongsToMany(models.user, {
         as: "booked_by_users",
         through: "booking",
       });
       this.hasMany(models.booking);
-      this.hasMany(models.image);
     }
   }
   Event.init(

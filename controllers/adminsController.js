@@ -8,13 +8,11 @@ class AdminsController extends BaseController {
   // Create user database
   async insertUser(req, res) {
     const { email, name } = req.body;
-    console.log(email, name);
     try {
       const output = await this.model.findOrCreate({
         where: { email: email },
         defaults: { name: name },
       });
-      console.log("sucess");
       return res.json(output);
     } catch (err) {
       console.log(err.message);
