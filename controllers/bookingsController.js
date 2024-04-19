@@ -15,11 +15,6 @@ class BookingsController extends BaseController {
     this.venueModel = venueModel;
     this.userModel = userModel;
   }
-  // get all the booking of one user
-
-  // get all the bookings of a particular event for admin to view
-
-  // cancel a booking
 
   //check number of tickets bought per event
   async getAvailableCapacity(req, res, next) {
@@ -29,7 +24,6 @@ class BookingsController extends BaseController {
         where: {
           eventId: eventId,
           booking_status: "complete",
-          // booking_status: { [Op.or]: ["Complete", "Open"] },
         },
       });
 
@@ -40,12 +34,10 @@ class BookingsController extends BaseController {
       // Calculate the available capacity
       const availableCapacity = totalCapacity - totalTicketsBought;
 
-      // return availableCapacity;
       res.json({ availableCapacity });
     } catch (err) {
       console.log(err);
       next(err);
-      // throw new Error("Error calculating available capacity");
       return res.status(400).json({ error: true, msg: err });
     }
   }
@@ -57,10 +49,7 @@ class BookingsController extends BaseController {
     const { user_id } = req.body;
 
     try {
-      // Event price
       const event = await this.eventModel.findByPk(eventId);
-
-      // console.log("CheckoutUser ID:", user_id);
 
       // Create a checkout session
       const session = await stripe.checkout.sessions.create({
@@ -100,9 +89,6 @@ class BookingsController extends BaseController {
         req.query.session_id
       );
       const payment_intent = session.payment_intent;
-      console.log("eventId:", eventId);
-      console.log("getSessionUser ID:", user);
-      console.log("sessionStatus:", session.status);
 
       const event = await this.eventModel.findOne({ where: { id: eventId } });
 
@@ -127,7 +113,6 @@ class BookingsController extends BaseController {
       }
 
       // Return the response with session status and payment status
-      console.log(session.customer_details.email);
       let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -554,18 +539,15 @@ class BookingsController extends BaseController {
     }
   }
 
-  //create a booking
-  //eventId, quantity_bought, payment_intent,
+  //create a paid booking
   async insertOne(eventId, quantity_bought, payment_intent, user, req, res) {
     try {
       eventId = parseInt(eventId);
 
-      // Validate eventId
       if (isNaN(eventId)) {
         return res.status(400).json({ error: true, msg: "Invalid eventId" });
       }
       const event = await this.eventModel.findByPk(eventId);
-      console.log(eventId);
 
       await sequelize.transaction(async (t) => {
         // Create payment entry
@@ -596,7 +578,6 @@ class BookingsController extends BaseController {
 
         // Save booking in database
         await booking.save({ transaction: t });
-        // return res.json(booking);
       });
     } catch (err) {
       console.log(err);
@@ -604,45 +585,21 @@ class BookingsController extends BaseController {
     }
   }
 
+  // insert a booking for free event
   async insertOneFree(req, res) {
     try {
-      console.log(req.body);
-      const { eventId, quantity_bought, payment_intent, user_id } = req.body;
+      const { eventId, quantity_bought, user_id } = req.body;
 
-      const event = await this.eventModel.findByPk(eventId);
-      console.log(eventId);
-
-      await sequelize.transaction(async (t) => {
-        // Create payment entry
-        const payment = await this.paymentModel.create(
-          {
-            total: event.price * quantity_bought * 100,
-            currency: "SGD",
-            status: "complete",
-            payment_intent: payment_intent,
-          },
-          { transaction: t }
-        );
-
-        // Create booking entry
-        const booking = await this.model.create(
-          {
-            userId: user_id,
-            eventId: eventId,
-            quantity_bought: quantity_bought,
-            quantity_left: quantity_bought,
-            booking_status: "complete",
-          },
-          { transaction: t }
-        );
-
-        // Associate booking with payment
-        await booking.setPayment(payment, { transaction: t });
-
-        // Save booking in database
-        await booking.save({ transaction: t });
-        return res.json(booking);
+      // Create booking entry
+      const booking = await this.model.create({
+        userId: user_id,
+        eventId: eventId,
+        quantity_bought: quantity_bought,
+        quantity_left: quantity_bought,
+        booking_status: "complete",
       });
+
+      return res.json(booking);
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: true, msg: err });
@@ -651,10 +608,8 @@ class BookingsController extends BaseController {
 
   async getOngoingBooking(req, res) {
     const { userId } = req.query;
-    // console.log(req?.body?.email);
 
     try {
-      console.log("getOngoing user:", userId);
       const output = await this.model.findAll({
         include: [
           {

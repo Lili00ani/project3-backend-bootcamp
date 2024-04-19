@@ -20,7 +20,6 @@ class EventsController extends BaseController {
 
   // Retrieve ongoing events with the associated admin for homepage
   async getOngoingEventsWithAdmin(req, res) {
-    console.log(this.model);
     try {
       const output = await this.model.findAll({
         include: [{ model: this.adminModel, as: "admin" }],
@@ -59,7 +58,6 @@ class EventsController extends BaseController {
     let output;
     try {
       const categoryFilter = categories ? { id: categories } : {};
-      console.log(categoryFilter);
 
       const queryOptions = {
         include: [
@@ -81,10 +79,8 @@ class EventsController extends BaseController {
           title: { [Op.iLike]: `%${keyword}%` },
         };
         output = await this.model.findAll(queryOptions);
-        console.log("first");
       } else {
         output = await this.model.findAll(queryOptions);
-        console.log("second");
       }
 
       return res.json(output);
@@ -93,21 +89,6 @@ class EventsController extends BaseController {
       return res
         .status(500)
         .send("An error occurred while searching by title.");
-    }
-  }
-
-  async deleteOne(req, res) {
-    const { eventId } = req.params;
-    try {
-      const event = await this.model.findByPk(eventId);
-      if (!event) {
-        return res.status(404).json({ error: true, msg: "Event not found" });
-      }
-      await event.destroy();
-      return res.json({ success: true, msg: "Event deleted successfully" });
-    } catch (err) {
-      console.log(err);
-      return res.status(400).json({ error: true, msg: err });
     }
   }
 

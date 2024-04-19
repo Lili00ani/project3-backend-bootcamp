@@ -67,7 +67,7 @@ module.exports = {
         price: 40,
         start: new Date("2024-04-29T10:00:00"),
         end: new Date("2024-04-29T15:00:00"),
-        status_id: 3,
+        status_id: 2,
         capacity: 15,
         image_link:
           "https://imgtr.ee/images/2024/04/14/a059983c388541999cca2428364d66bf.jpeg",
