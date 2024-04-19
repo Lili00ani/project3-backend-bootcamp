@@ -10,7 +10,7 @@ class UsersController extends BaseController {
     const { email } = req.body;
     try {
       const output = await this.model.findOrCreate({
-        where: { email: email, role: "user" },
+        where: { email: email },
       });
       return res.json(output);
     } catch (err) {

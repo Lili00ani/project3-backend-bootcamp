@@ -17,13 +17,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      role: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      reminder: {
-        type: Sequelize.BOOLEAN,
-      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,

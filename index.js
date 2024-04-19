@@ -80,7 +80,7 @@ const usersRouter = new UsersRouter(usersController).routes();
 const venuesRouter = new VenuesRouter(venuesController).routes();
 const adminsRouter = new AdminsRouter(adminsController).routes();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.use(cookieParser());
 
 app.use(express.json());
